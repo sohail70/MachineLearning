@@ -351,6 +351,50 @@ def pegasos(feature_matrix, labels, T, L):
     return theta,theta_0
 
 # Part II
+'''
+Now that you have verified the correctness of your implementations, you are ready to tackle the main task of this project: building a classifier 
+that labels reviews as positive or negative using text-based features and the linear classifiers that you implemented in the previous section!
+
+The Data
+The data consists of several reviews, each of which has been labeled with  −1  or  +1 , corresponding to a negative or positive review, respectively.
+The original data has been split into four files:
+
+reviews_train.tsv (4000 examples)
+reviews_validation.tsv (500 examples)
+reviews_test.tsv (500 examples)
+
+To get a feel for how the data looks, we suggest first opening the files with a text editor, spreadsheet program, or other scientific software package
+(like pandas). dastor ine: df = pd.read_csv('~/MITCourse/MITcourse/Project1(sentiment_analysis)/reviews_train.tsv',sep='\t', encoding='cp1252')
+ya ba : reviews_train = pd.read_csv("reviews_train.tsv", sep='\t',encoding = 'unicode_escape')
+Translating reviews to feature vectors
+We will convert review texts into feature vectors using a bag of words approach. We start by compiling all the words that appear in a training set of
+reviews into a dictionary , thereby producing a list of  𝑑  unique words.
+
+
+We can then transform each of the reviews into a feature vector of length  𝑑  by setting the  𝑖th  coordinate of the feature vector to  1  if the  𝑖th 
+word in the dictionary appears in the review, or  0  otherwise. For instance, consider two simple documents “Mary loves apples" and “Red apples".
+In this case, the dictionary is the set  {Mary;loves;apples;red} , and the documents are represented as  (1;1;1;0)  and  (0;0;1;1) .
+
+A bag of words model can be easily expanded to include phrases of length  𝑚 . A unigram model is the case for which  𝑚=1 . 
+In the example, the unigram dictionary would be  (Mary;loves;apples;red) . In the bigram case,  𝑚=2 , the dictionary is 
+(Mary loves;loves apples;Red apples) , and representations for each sample are  (1;1;0),(0;0;1) . In this section, you will 
+only use the unigram word features. These functions are already implemented for you in the bag of words function.
+In utils.py, we have supplied you with the load data function, which can be used to read the .tsv files and returns the labels and texts.
+We have also supplied you with the bag_of_words function in project1.py, which takes the raw data and returns dictionary of unigram words.
+The resulting dictionary is an input to extract_bow_feature_vectors which computes a feature matrix of ones and zeros that can be used as the input
+for the classification algorithms. Using the feature matrix and your implementation of learning algorithms from before, you will be able to compute 
+ 𝜃  and  𝜃0 .
+
+
+'''
+
+'''
+Implement a classification function that uses  𝜃  and  𝜃0  to classify a set of data points. You are given the feature matrix,  𝜃 , and  𝜃0  as defined in previous sections. This function should return a numpy array of -1s and 1s. If a prediction is greater than zero, it should be considered a positive classification.
+
+Available Functions: You have access to the NumPy python library as np.
+
+Tip:: As in previous exercises, when  𝑥  is a float, “ 𝑥=0 " should be checked with  |𝑥|<𝜖 .
+'''
 
 
 def classify(feature_matrix, theta, theta_0):
