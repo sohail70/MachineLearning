@@ -415,8 +415,50 @@ def classify(feature_matrix, theta, theta_0):
     be considered a positive classification.
     """
     # Your code here
-    raise NotImplementedError
+    #raise NotImplementedError
+    #pred = np.zeros([feature_matrix.shape[0]])
+    pred = np.matmul(feature_matrix,theta) + theta_0
+    pred = np.where(pred>10**-6,1,-1)
+    return pred
+ 
+'''
+We have supplied you with an accuracy function:
 
+def accuracy(preds, targets):
+	"""
+	Given length-N vectors containing predicted and target labels,
+	returns the percentage and number of correct predictions.
+	"""
+	return (preds == targets).mean()
+
+
+The accuracy function takes a numpy array of predicted labels and a numpy array of actual labels and returns the prediction accuracy. 
+You should use this function along with the functions that you have implemented thus far in order to implement classifier_accuracy.
+
+The classifier_accuracy function should take 6 arguments:
+
+a classifier function that, itself, takes arguments (feature_matrix, labels, **kwargs)
+
+the training feature matrix
+
+the validation feature matrix
+
+the training labels
+
+the valiation labels
+
+a **kwargs argument to be passed to the classifier function
+
+This function should train the given classifier using the training data and then compute compute the classification accuracy on both the train
+and validation data. The return values should be a tuple where the first value is the training accuracy and the second value is the validation accuracy.
+
+Implement classifier accuracy in the coding box below:
+
+Available Functions: You have access to the NumPy python library as np, to classify which you have already implemented and to accuracy 
+which we defined above.
+
+
+'''
 
 def classifier_accuracy(
         classifier,
@@ -451,8 +493,15 @@ def classifier_accuracy(
     accuracy of the trained classifier on the validation data.
     """
     # Your code here
-    raise NotImplementedError
+    #raise NotImplementedError
+    theta ,theta_0 = classifier(train_feature_matrix,train_labels,**kwargs)
+    
+    pred = classify(train_feature_matrix,theta,theta_0)
+    acc1 = accuracy(pred,train_labels)
 
+    pred = classify(val_feature_matrix,theta,theta_0)
+    acc2 = accuracy(pred,val_labels)
+    return acc1,acc2
 
 def extract_words(input_string):
     """
