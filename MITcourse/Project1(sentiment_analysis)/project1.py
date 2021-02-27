@@ -524,11 +524,16 @@ def bag_of_words(texts):
     Feel free to change this code as guided by Problem 9
     """
     # Your code here
+    stopword_data = open('stopwords.txt','r')
+    stopword = stopword_data.read().splitlines()
+
+
     dictionary = {} # maps word to unique index
     for text in texts:
         word_list = extract_words(text)
         for word in word_list:
-            if word not in dictionary:
+            #if (word not in dictionary)  #if e ghabl az feature engineering
+            if (word not in dictionary) and (word not in stopword): #if e bad az feature engineering 
                 dictionary[word] = len(dictionary)
     return dictionary
 
@@ -552,7 +557,27 @@ def extract_bow_feature_vectors(reviews, dictionary):
         word_list = extract_words(text)
         for word in word_list:
             if word in dictionary:
-                feature_matrix[i, dictionary[word]] = 1
+                #feature_matrix[i, dictionary[word]] = 1 #before feature engineering
+                feature_matrix[i, dictionary[word]] = word_list.count(word) #after feature engineering --> albate accuracy ro kam kard!--> main ro ejra kun mibini(akharin accuracy!)
+    '''
+        dalile kahesh accuracy:comment ha
+        I would say that it probably generalizes less well, because  𝑡ℎ𝑒𝑡𝑎  will be pointing more in the direction of the words that show up more
+        than once in a message, and by that will miss the correct qualification of positive messages with other words that had less of an impact 
+        now on the direction of  𝑡ℎ𝑒𝑡𝑎 .
+
+        comment staff: I'd agree with this. So if you want to use the frequency instead of binary count, check out tf-idf, which
+        normalizes the frequent words that appear in all documents. This is usually a better measure comparing to the generic count feature.
+        comment dige:
+        Lets first take a qualitative look on the problem:
+        Review 1: 'I LOVED THIS CHIPS!'
+        Review2: 'I loved the taste of chips. I loved the packaging. I loved how it goes well with coffee. I loved the crispiness!'
+        Both are positive reviews. For the binary classifier without word count, feature matrix for Review 1 and Review 2 are about the same.
+        Now if we add word count to the feature matrix, Review1 is considered inferior to Review2 (as obvious from above, Review1 has only 1 word count
+        for the relevant word 'loved', but Review2 has a count of 4 for the relevant word 'loved').
+        Then this problem boils down to the how the user sentiment was labeled. If reviews like Review1 were equally likely to be considered as positive 
+        as Review2 when labelling the sentiment, adding word count to the feature matrix will only deteriorate the performance. right?
+    '''
+    
     return feature_matrix
 
 
@@ -562,3 +587,69 @@ def accuracy(preds, targets):
     returns the percentage and number of correct predictions.
     """
     return (preds == targets).mean()
+
+
+
+'''
+9. Feature Engineering
+Frequently, the way the data is represented can have a significant impact on the performance of a machine learning method.
+Try to improve the performance of your best classifier by using different features. In this problem, we will practice two simple variants of 
+the bag of words (BoW) representation.
+
+
+Remove Stop Words
+Try to implement stop words removal in your feature engineering code. Specifically, load the file stopwords.txt, remove the words in the file from 
+your dictionary,
+and use features constructed from the new dictionary to train your model and make predictions.
+Compare your result in the testing data on Pegasos algorithm using  𝑇=25  and  𝐿=0.01  when you remove the words in stopwords.txt from your dictionary.
+
+Hint: Instead of replacing the feature matrix with zero columns on stop words, you can modify the bag_of_words function to prevent adding stopwords 
+to the dictionary
+
+Accuracy on the test set using the original dictionary: 0.8020
+Accuracy on the test set using the dictionary with stop words removed:
+
+
+
+Change Binary Features to Counts Features
+Again, use the same learning algorithm and the same feature as the last problem. However, when you compute the feature vector of a word,
+use its count in each document rather than a binary indicator.
+
+Hint: You are free to modify the extract_bow_feature_vectors function to compute counts features.
+
+Accuracy on the test set using the dictionary with stop words removed and counts features:
+Try to compare your result to the last problem, and see the discussion in solution after answering the question.
+
+
+Some additional features that you might want to explore are:
+
+Length of the text
+
+Occurrence of all-cap words (e.g. “AMAZING", “DON'T BUY THIS")
+
+Word embeddings
+
+Besides adding new features, you can also change the original unigram feature set. For example,
+
+Threshold the number of times a word should appear in the dataset before adding them to the dictionary. For example, 
+words that occur less than three times across the train dataset could be considered irrelevant and thus can be removed. 
+This lets you reduce the number of columns that are prone to overfitting.
+
+There are also many other things you could change when training your model. Try anything that can help you understand 
+the sentiment of a review. It's worth looking through the dataset and coming up with some features that may help your model.
+Remember that not all features will actually help so you should experiment with some simpler ones before trying anything too complicated.
+
+'''
+
+'''
+comment ye nafar:
+The process is iterative in cycles and not linear. Usually, the works goes like that:
+
+Through experience or intuition, you select the best features from your dataset that you can think of. If you don't know, ask, do your research or take all of them if it is possible (worst solution).
+
+You try multiple models without any tuning to see the differences and similarities. Usually you select the simplest, fastest and highest accuracy model. It is a trade-off.
+
+Based on accuracies, you decide if you will tune all models or select the most accurate one. If the difference is huge, then select the most accurate one, if not select top 3.
+
+In each step, you can go back one step and change stuff based on the on-going findings.
+'''

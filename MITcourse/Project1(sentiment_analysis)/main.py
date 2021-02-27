@@ -20,7 +20,6 @@ train_bow_features = p1.extract_bow_feature_vectors(train_texts, dictionary)
 val_bow_features = p1.extract_bow_feature_vectors(val_texts, dictionary)
 test_bow_features = p1.extract_bow_feature_vectors(test_texts, dictionary)
 
-
 '''
 Once you have completed the implementation of the 3 learning algorithms, you should qualitatively verify your implementations. In main.py we have
 included a block of code that you should uncomment. This code loads a 2D dataset from toy_data.txt, and trains your models using  𝑇=10,𝜆=0.2 . 
@@ -178,6 +177,7 @@ Also experiment with finding unigrams that were the most impactful in predicting
 #-------------------------------------------------------------------------------
 '''
 all you are doing is looking for the corresponding words to the largest coefs within theta, so theta_0 is irrelevant
+dar vaghe bordare theta ye seri az element hash vazn ziadi dare ke motenazer ba ye seri feature hast ke ona ro paeen bedast miarim
 '''
 thetas_pegasos = p1.pegasos(train_bow_features, train_labels, 25, 0.01)
 
