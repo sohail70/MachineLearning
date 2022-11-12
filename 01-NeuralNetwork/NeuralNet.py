@@ -124,6 +124,10 @@ class NeuralNetwork:
                 print("Point" , point[0],point[1], " failed to be predicted correctly.")
                 return
 
+    def __str__(self):
+        return f"W:{self.W} , V:{self.V} , b:{self.biases}"
+
+
     def run(self):
         self.train()
         self.test_neural_network()
@@ -134,4 +138,5 @@ if __name__== "__main__":
     print(f"Project: {projectName }")
     myNet = NeuralNetwork()
     myNet.run()
+    print(myNet.__str__())
     
