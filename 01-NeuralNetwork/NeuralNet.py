@@ -56,8 +56,15 @@ class NeuralNetwork:
         self.vec_relu = np.vectorize(self.relu) #vectorized relu so that we can input an array of z's
         self.vec_relu_der = np.vectorize(self.relu_derivative)
 
+        self.vec_output_activation = np.vectorize(self.output_activation)
+        self.vec_output_activation_der = np.vectorize(self.output_activation_derivative)
+
         self.learning_rate = 0.001
 
+        self.epochs_to_train = 10
+        
+        self.training_points = [((2,1),10), ((3,3),21), ((4,5),32),((6,6),42)]
+        self.testing_points = [(1,1),(2,2),(3,3),(5,5),(10,10)]
 
     def relu(self,z): 
         return np.max([0,z])
@@ -68,10 +75,10 @@ class NeuralNetwork:
         else:
             return 1
 
-    def output_activation(u): #f(u) = u 
+    def output_activation(self,u): #f(u) = u 
         return u
 
-    def output_activation_derivative(u)
+    def output_activation_derivative(self,u):
         return 1
 
     def one_step_train(self,x1,x2,y):
@@ -80,26 +87,51 @@ class NeuralNetwork:
         z = np.matmul(self.W , input_values.T) + self.biases.T # 3 by 1 ----> hidden layer aggregation --> array of z1,z2,z3
         a = self.vec_relu(z) # 3 by 1 ----> hidden layer activation ----> array of a1,a2,a3
         u = np.matmul(self.V , a) # ---> output layer aggregation --> u1
-        o = u # ---> output layer activation ---> o1
+        o = self.vec_output_activation(u) # ---> output layer activation ---> o1
 
 
-        # Gradients
+        ### Gradients ###
         grad_wrt_W = np.matmul(-(y-o) * 1 * self.V.T * self.vec_relu_der(z) , input_values)
         grad_wrt_V = -(y-o) * a
         grad_wrt_b = -(y-o) * self.V.T * self.vec_relu_der(z) * np.array([[1,1,1]]).T
 
-        # Gradient Descent
+        ### Gradient Descent ###
         self.W = self.W - self.learning_rate * grad_wrt_W
-        self.V = self.V - self.learning_rate * grad_wrt_V
-        self.biases = self.biases - self.learning_rate * grad_wrt_b
+        self.V = self.V - self.learning_rate * grad_wrt_V.T
+        self.biases = self.biases - self.learning_rate * grad_wrt_b.T
 
-    def train():
+    def train(self):
         for epoch in range(self.epochs_to_train):
+            for x,y in self.training_points:
+                self.one_step_train(x[0],x[1],y)
+
+    def predict(self,x1,x2):
+        ### Forward Propagation ###
+        input_values = np.array([[x1,x2]]) # 2 by 1
+        z = np.matmul(self.W , input_values.T) + self.biases.T # 3 by 1 ----> hidden layer aggregation --> array of z1,z2,z3
+        a = self.vec_relu(z) # 3 by 1 ----> hidden layer activation ----> array of a1,a2,a3
+        u = np.matmul(self.V , a) # ---> output layer aggregation --> u1
+        o = self.vec_output_activation(u) # ---> output layer activation ---> o1
+
+        return o.item()
+
+    def test_neural_network(self):
+        for point in self.testing_points:
+            print("Point",point , "Prediction ",self.predict(point[0],point[1]))
+            if abs(self.predict(point[0],point[1]) - 7*point[0]) < 0.1:
+                print("Test Passed")
+            else:
+                print("Point" , point[0],point[1], " failed to be predicted correctly.")
+                return
+
+    def run(self):
+        self.train()
+        self.test_neural_network()
 
 
 if __name__== "__main__":
     projectName = "Neural Net"
     print(f"Project: {projectName }")
     myNet = NeuralNetwork()
-    myNet.train(1,1,3)
-    print("nothing")
+    myNet.run()
+    
