@@ -39,7 +39,7 @@ constant*v3          Relu_der(z3)                                    w13 w23]
 
 '''
 
-
+import matplotlib.pyplot as plt
 import numpy as np
 
 
@@ -49,7 +49,7 @@ class NeuralNetwork:
         #      w12 w22;
         #      w13 w23]
         self.W = np.array([[1,1],[1,1],[1,1]]) 
-        # V = []
+        # V
         self.V = np.array([[1,1,1]])
         self.biases = np.array([[0,0,0]])
 
@@ -65,6 +65,8 @@ class NeuralNetwork:
         
         self.training_points = [((2,1),10), ((3,3),21), ((4,5),32),((6,6),42)]
         self.testing_points = [(1,1),(2,2),(3,3),(5,5),(10,10)]
+
+        self.loss_array = np.array([])
 
     def relu(self,z): 
         return np.max([0,z])
@@ -89,7 +91,7 @@ class NeuralNetwork:
         u = np.matmul(self.V , a) # ---> output layer aggregation --> u1
         o = self.vec_output_activation(u) # ---> output layer activation ---> o1
 
-
+        self.loss_array = np.append(self.loss_array , 0.5*(y-o)**2)
         ### Gradients ###
         grad_wrt_W = np.matmul(-(y-o) * 1 * self.V.T * self.vec_relu_der(z) , input_values)
         grad_wrt_V = -(y-o) * a
@@ -132,11 +134,87 @@ class NeuralNetwork:
         self.train()
         self.test_neural_network()
 
+    
+
+    def loss_info(self):
+        ax = plt.figure()
+        plt.plot([i for i in range(len(self.loss_array))] , self.loss_array)
+        plt.xlabel("iteration")
+        plt.ylabel("loss")
+        plt.title("Losses vs iteration over the course of training")
+        plt.show()
+    
+    def MSE(self):
+        self.MSE = np.average(self.loss_array)
+    
+    def graphics_with_line(self):
+        # Train Data
+        x_train = [self.training_points[i][0] for i in range(len(self.training_points))]
+
+        y_truth = [self.training_points[i][1] for i in range(len(self.training_points))]
+        y_pred = [self.predict(x_train[i][0],x_train[i][1]) for i in range(len(self.training_points))]
+        ax = plt.figure().add_subplot(projection='3d')
+    
+        ax.set_xlabel('x1')
+        ax.set_ylabel('x2')
+        ax.set_zlabel('y')
+        p1 = [ax.plot( [x_train[i][0],x_train[i+1][0]]   ,   [x_train[i][1],x_train[i+1][1]],    [y_truth[i],y_truth[i+1]],'ro--' , label = 'Truth') for i in range(len(self.training_points)-1)]
+        p2 = [ax.plot( [x_train[i][0],x_train[i+1][0]]   ,   [x_train[i][1],x_train[i+1][1]],    [y_pred[i],y_pred[i+1]],'bo--' , label='Pred') for i in range(len(self.training_points)-1)]
+        
+
+
+        #handles,labels = plt.gca().get_legend_handles_labels()
+        plt.legend()
+        plt.show()
+
+    
+    def train_graphics(self):
+        # Train Data
+        x_train = [self.training_points[i][0] for i in range(len(self.training_points))]
+        x0 = list(zip(*x_train))[0]
+        x1 = list(zip(*x_train))[1]
+
+        y_truth = [self.training_points[i][1] for i in range(len(self.training_points))]
+        y_pred = [self.predict(x0[i],x1[i]) for i in range(len(self.training_points))]
+        ax = plt.figure().add_subplot(projection='3d')
+    
+        ax.set_xlabel('x1')
+        ax.set_ylabel('x2')
+        ax.set_zlabel('y')
+
+        plt.scatter(x0,x1,y_truth , marker='o' ,label = 'Truth' , linewidths=3 , edgecolors='r')
+        plt.scatter(x0,x1,y_pred , marker='^' ,label = 'Pred' ,linewidths=3 , edgecolors='b')
+
+        plt.title("Neural Net Prediction of the Training Data") #this is not necessary but just for checking out the fitting process
+        plt.legend()
+        plt.show()
+
+    def test_graphics(self):
+
+        x0 = list(zip(*self.testing_points))[0]
+        x1 = list(zip(*self.testing_points))[1]
+        y_pred = [self.predict(x0[i],x1[i]) for i in range(len(self.testing_points))]
+        
+        ax = plt.figure().add_subplot(projection='3d')
+    
+        ax.set_xlabel('x1')
+        ax.set_ylabel('x2')
+        ax.set_zlabel('y')
+        
+        plt.scatter(x0,x1,y_pred , marker='^' ,label = 'Pred' ,linewidths = 3 , edgecolors = 'b')
+        plt.title("Neural Net prediction of the test data")
+        plt.legend()
+        plt.show()
+
 
 if __name__== "__main__":
     projectName = "Neural Net"
     print(f"Project: {projectName }")
     myNet = NeuralNetwork()
     myNet.run()
+    myNet.train_graphics()
+    myNet.test_graphics()
+    myNet.loss_info()
+    
     print(myNet.__str__())
     
