@@ -37,6 +37,8 @@ constant*v3          Relu_der(z3)                                    w13 w23]
 
 
 
+
+remember --> to many hidden units--> it may over-fit the training data
 '''
 
 import matplotlib.pyplot as plt
@@ -67,6 +69,8 @@ class NeuralNetwork:
         self.testing_points = [(1,1),(2,2),(3,3),(5,5),(10,10)]
 
         self.loss_array = np.array([])
+        self.train_accuracy_sum_for_one_epoch = 0
+        self.training_accuracy = np.array([])
 
     def relu(self,z): 
         return np.max([0,z])
@@ -92,6 +96,7 @@ class NeuralNetwork:
         o = self.vec_output_activation(u) # ---> output layer activation ---> o1
 
         self.loss_array = np.append(self.loss_array , 0.5*(y-o)**2)
+        self.train_accuracy_sum_for_one_epoch = self.train_accuracy_sum_for_one_epoch + self.loss_array[-1] ** 2
         ### Gradients ###
         grad_wrt_W = np.matmul(-(y-o) * 1 * self.V.T * self.vec_relu_der(z) , input_values)
         grad_wrt_V = -(y-o) * a
@@ -103,9 +108,20 @@ class NeuralNetwork:
         self.biases = self.biases - self.learning_rate * grad_wrt_b.T
 
     def train(self):
-        for epoch in range(self.epochs_to_train):
+        for epoch in range(self.epochs_to_train): # Each epoch is a complete pass through the training dataset
             for x,y in self.training_points:
                 self.one_step_train(x[0],x[1],y)
+            self.root_mean_square() 
+
+# Accuracy for continuous case is different than accuracy for classification. in classification we check how many of the output of the first epoch matches the y_true but here we can't
+# match because https://stackoverflow.com/questions/50520725/accuracy-of-neural-networks-incase-of-doing-prediction-of-a-continuious-variable so we use means square metric 
+# to see how much deviation we have from the y_truth with these new set of learned weights in epoch one
+    def root_mean_square(self):
+        self.train_accuracy_ave_for_one_epoch = self.train_accuracy_sum_for_one_epoch / len(self.training_points) # average of accuracy of data points for one epoch
+        self.root_mean = np.sqrt(self.train_accuracy_ave_for_one_epoch)
+        self.training_accuracy = np.append(self.training_accuracy , self.root_mean)
+        self.train_accuracy_sum_for_one_epoch = 0
+
 
     def predict(self,x1,x2):
         ### Forward Propagation ###
