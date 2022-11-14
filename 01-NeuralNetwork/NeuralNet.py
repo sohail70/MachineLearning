@@ -65,7 +65,7 @@ class NeuralNetwork:
 
         self.epochs_to_train = 10
         
-        self.training_points = [((2,1),10), ((3,3),21), ((4,5),32),((6,6),42)]
+        self.training_points = [((2,1),10), ((3,3),21), ((4,5),32),((6,6),42)] # here we didn't consider validation data (which is maybe 20 percents of the training data) --> but if you have one you can add validation accuracy
         self.testing_points = [(1,1),(2,2),(3,3),(5,5),(10,10)]
 
         self.loss_array = np.array([])
@@ -160,8 +160,7 @@ class NeuralNetwork:
         plt.title("Losses vs iteration over the course of training")
         plt.show()
     
-    def MSE(self):
-        self.MSE = np.average(self.loss_array)
+
     
     def graphics_with_line(self):
         # Train Data
@@ -192,8 +191,7 @@ class NeuralNetwork:
 
         y_truth = [self.training_points[i][1] for i in range(len(self.training_points))]
         y_pred = [self.predict(x0[i],x1[i]) for i in range(len(self.training_points))]
-        ax = plt.figure().add_subplot(projection='3d')
-    
+        ax = plt.figure(figsize=(10,10)).add_subplot(2,1,1, projection='3d')
         ax.set_xlabel('x1')
         ax.set_ylabel('x2')
         ax.set_zlabel('y')
@@ -203,6 +201,13 @@ class NeuralNetwork:
 
         plt.title("Neural Net Prediction of the Training Data") #this is not necessary but just for checking out the fitting process
         plt.legend()
+
+        # Training Accuracy ---> Not exactly accuracy but its MSE --> because accuracy must go up and it has inverse relation with loss but mse has the direct relationship with loss
+        plt.subplot(212)
+        plt.xlabel("Epoch")
+        plt.ylabel("Root mean square error")
+        plt.plot(self.training_accuracy)
+
         plt.show()
 
     def test_graphics(self):
