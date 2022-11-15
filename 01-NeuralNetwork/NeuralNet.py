@@ -39,6 +39,17 @@ constant*v3          Relu_der(z3)                                    w13 w23]
 
 
 remember --> to many hidden units--> it may over-fit the training data
+
+
+some terminology:
+Training dataset: the data used to fit the model.
+Validation dataset: the data used to validate the generalization ability of the model or for early stopping, during the training process.
+Testing dataset: the data used to for other purposes other than training and validating.
+
+
+
+you can use softmax instead of relu --> softmax normalizes the output numbers and turn it into probability distribution
+
 '''
 
 import matplotlib.pyplot as plt
@@ -238,4 +249,3 @@ if __name__== "__main__":
     myNet.loss_info()
     
     print(myNet.__str__())
-    
