@@ -249,3 +249,5 @@ if __name__== "__main__":
     myNet.loss_info()
     
     print(myNet.__str__())
+
+
